@@ -4,6 +4,4 @@ set -e
 # Disabling nginx daemon mode
 export KONG_NGINX_DAEMON="off"
 
-eval `luarocks path`
-
 exec "$@"

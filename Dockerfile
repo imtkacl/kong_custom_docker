@@ -72,14 +72,22 @@ RUN make dev
 
 RUN mkdir /etc/kong
 #RUN cp $KONG_DOWNLOAD/kong.conf.default /etc/kong/kong.conf
-RUN eval `luarocks path`
+#RUN luarocks path >> ~/.bashrc
 RUN make lint
 #RUN make test
 RUN chmod 755 $HOME
 
+#RUN wget -O /usr/local/bin/dumb-init https://github.com/Yelp/dumb-init/releases/download/v1.1.3/dumb-init_1.1.3_amd64 && chmod +x /usr/local/bin/dumb-init
+
+COPY dumb-init_1.1.3_amd64 /usr/local/bin/dumb-init
+RUN chmod +x /usr/local/bin/dumb-init
+
 COPY docker-entrypoint.sh /docker-entrypoint.sh
 ENTRYPOINT ["/docker-entrypoint.sh"]
 
+#ENV TERM vt100
+
 EXPOSE 8000 8443 8001 7946
 CMD ["kong", "start"]
+#CMD ["top"]
 
