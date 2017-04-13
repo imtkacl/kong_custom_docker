@@ -8,16 +8,17 @@ ARG PROXY_PORT
 ENV http_proxy http://$PROXY_USER:$PROXY_PASSWORD@$PROXY_SERVER:$PROXY_PORT/
 ENV https_proxy http://$PROXY_USER:$PROXY_PASSWORD@$PROXY_SERVER:$PROXY_PORT/
 
-ENV DOWNLOAD_CACHE $HOME/download-cache
+ENV BASE /usr/local
+ENV DOWNLOAD_CACHE $BASE/download-cache
 ENV LUAROCKS 2.4.2
 ENV LUAROCKS_DOWNLOAD $DOWNLOAD_CACHE/luarocks-$LUAROCKS
-ENV SERF 0.8.0
+ENV SERF 0.7.0
 ENV SERF_DOWNLOAD $DOWNLOAD_CACHE/serf-$SERF
 ENV OPENSSL 1.0.2k
 ENV OPENSSL_DOWNLOAD $DOWNLOAD_CACHE/openssl-$OPENSSL
 ENV OPENRESTY 1.11.2.2
 ENV OPENRESTY_DOWNLOAD $DOWNLOAD_CACHE/openresty-$OPENRESTY
-ENV INSTALL_CACHE $HOME/install-cache
+ENV INSTALL_CACHE $BASE/install-cache
 ENV OPENSSL_INSTALL $INSTALL_CACHE/openssl-$OPENSSL
 ENV OPENRESTY_INSTALL $INSTALL_CACHE/openresty-$OPENRESTY
 ENV LUAROCKS_INSTALL $INSTALL_CACHE/luarocks-$LUAROCKS
@@ -61,7 +62,7 @@ RUN make install
 WORKDIR $SERF_DOWNLOAD
 RUN wget https://releases.hashicorp.com/serf/${SERF}/serf_${SERF}_linux_amd64.zip
 RUN unzip serf_${SERF}_linux_amd64.zip
-RUN ln -s $SERF_DOWNLOAD/serf $SERF_INSTALL/serf
+RUN ln -s $SERF_DOWNLOAD/serf /usr/local/bin/serf
 
 WORKDIR $DOWNLOAD_CACHE
 RUN git clone https://github.com/imtkacl/kong
@@ -72,22 +73,20 @@ RUN make dev
 
 RUN mkdir /etc/kong
 #RUN cp $KONG_DOWNLOAD/kong.conf.default /etc/kong/kong.conf
-#RUN luarocks path >> ~/.bashrc
 RUN make lint
 #RUN make test
-RUN chmod 755 $HOME
+RUN chmod 755 $BASE
 
 #RUN wget -O /usr/local/bin/dumb-init https://github.com/Yelp/dumb-init/releases/download/v1.1.3/dumb-init_1.1.3_amd64 && chmod +x /usr/local/bin/dumb-init
 
 COPY dumb-init_1.1.3_amd64 /usr/local/bin/dumb-init
 RUN chmod +x /usr/local/bin/dumb-init
 
+ENV KONG_LOG_LEVEL debug
+
 COPY docker-entrypoint.sh /docker-entrypoint.sh
 ENTRYPOINT ["/docker-entrypoint.sh"]
 
-#ENV TERM vt100
-
-EXPOSE 8000 8443 8001 7946
+EXPOSE 8000 8443 8001 7946 8444
 CMD ["kong", "start"]
-#CMD ["top"]
 
