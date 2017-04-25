@@ -65,6 +65,7 @@ RUN unzip serf_${SERF}_linux_amd64.zip
 RUN ln -s $SERF_DOWNLOAD/serf /usr/local/bin/serf
 
 WORKDIR $DOWNLOAD_CACHE
+ADD https://api.github.com/repos/imtkacl/kong/git/refs/heads/master /version.json
 RUN git clone https://github.com/imtkacl/kong
 RUN git config --global url."https://".insteadOf git://
 WORKDIR $KONG_DOWNLOAD
@@ -73,7 +74,7 @@ RUN make dev
 
 RUN mkdir /etc/kong
 #RUN cp $KONG_DOWNLOAD/kong.conf.default /etc/kong/kong.conf
-RUN make lint
+#RUN make lint
 #RUN make test
 RUN chmod 755 $BASE
 

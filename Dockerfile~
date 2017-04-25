@@ -62,9 +62,10 @@ RUN make install
 WORKDIR $SERF_DOWNLOAD
 RUN wget https://releases.hashicorp.com/serf/${SERF}/serf_${SERF}_linux_amd64.zip
 RUN unzip serf_${SERF}_linux_amd64.zip
-RUN ln -s $SERF_DOWNLOAD/serf $SERF_INSTALL/serf
+RUN ln -s $SERF_DOWNLOAD/serf /usr/local/bin/serf
 
 WORKDIR $DOWNLOAD_CACHE
+ADD https://api.github.com/repos/imtkacl/kong/git/refs/heads/master /version.json
 RUN git clone https://github.com/imtkacl/kong
 RUN git config --global url."https://".insteadOf git://
 WORKDIR $KONG_DOWNLOAD
