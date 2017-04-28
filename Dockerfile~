@@ -5,6 +5,8 @@ ARG PROXY_PASSWORD
 ARG PROXY_SERVER
 ARG PROXY_PORT
 
+ARG KONG_LOG_LEVEL
+
 ENV http_proxy http://$PROXY_USER:$PROXY_PASSWORD@$PROXY_SERVER:$PROXY_PORT/
 ENV https_proxy http://$PROXY_USER:$PROXY_PASSWORD@$PROXY_SERVER:$PROXY_PORT/
 
@@ -73,8 +75,8 @@ RUN make install
 RUN make dev
 
 RUN mkdir /etc/kong
-#RUN cp $KONG_DOWNLOAD/kong.conf.default /etc/kong/kong.conf
-RUN make lint
+RUN cp $KONG_DOWNLOAD/kong.conf.default /etc/kong/kong.conf
+#RUN make lint
 #RUN make test
 RUN chmod 755 $BASE
 
@@ -82,8 +84,6 @@ RUN chmod 755 $BASE
 
 COPY dumb-init_1.1.3_amd64 /usr/local/bin/dumb-init
 RUN chmod +x /usr/local/bin/dumb-init
-
-ENV KONG_LOG_LEVEL debug
 
 COPY docker-entrypoint.sh /docker-entrypoint.sh
 ENTRYPOINT ["/docker-entrypoint.sh"]
